@@ -39,7 +39,6 @@ namespace Task1
                     average += car.Passenger;
                 return (float)Math.Round((float)average/carriages.Length,2);
             }
-             
         }
 
         public Train(uint trainNumber,TrainType type,string route,DateTime dispatch,DateTime arrival,params Сarriage[] carriages)
