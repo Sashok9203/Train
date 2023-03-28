@@ -17,24 +17,36 @@ namespace Task1
         private readonly uint number;
         private readonly CType type;
         private readonly uint seats;
-        private uint passenger;
-
-        public uint Passenger 
-        {
-            get { return passenger; }
-            set { passenger = value<=seats ? value : seats;}
-        }
+        private uint passengers;
+        
         public uint Seats { get { return seats; } }
         public CType Type { get { return type; } }
         public uint Number { get { return number; } }
+        public uint FreeSeats { get { return seats - passengers; } }
 
-        public uint FreeSeats { get { return seats - passenger; } }
-        public Сarriage(uint number, CType type, uint seats, uint passenger = 0)
+        public uint Passenger
+        {
+            get { return passengers; }
+            set { passengers = value <= seats ? value : seats; }
+        }
+
+        public Сarriage(uint number, CType type, uint seats, uint passengers = 0)
         {
             this.number = number;   
             this.type = type;   
             this.seats = seats; 
-            this.passenger = passenger; 
+            this.passengers = passengers; 
         }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder($"Сarriage \"{number}\"\n");
+            sb.AppendLine($" Type       : {type}");
+            sb.AppendLine($" Seats      : {seats}");
+            sb.AppendLine($" Passengers : {passengers}");
+            sb.AppendLine($" Free seats : {FreeSeats}\n");
+            return sb.ToString();
+        }
+
     }
 }
