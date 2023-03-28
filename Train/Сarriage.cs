@@ -27,7 +27,11 @@ namespace Task1
         public uint Passenger
         {
             get { return passengers; }
-            set { passengers = value <= seats ? value : seats; }
+            set
+            {
+                if (value > seats) throw new Exception($" Invalid passengers count of carriage number \"{number}\"");
+                else passengers = value;
+            }
         }
 
         public Сarriage(uint number, CType type, uint seats, uint passengers = 0)
@@ -35,7 +39,7 @@ namespace Task1
             this.number = number;   
             this.type = type;   
             this.seats = seats; 
-            this.passengers = passengers; 
+            this.Passenger = passengers; 
         }
 
         public override string ToString()

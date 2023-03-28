@@ -30,7 +30,11 @@ namespace Task1
         public DateTime Arrival
         {
             get { return arrival; }
-            set { arrival = arrival < Dispatch ? Dispatch : value; }
+            set 
+            {
+                if (arrival < Dispatch) throw new Exception($" Error in the arrival time of train number \"{number}\"");
+                else arrival =  value; 
+            }
         }
         public float AvrPass 
         {
