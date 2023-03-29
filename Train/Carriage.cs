@@ -14,40 +14,36 @@ namespace Task1
     }
     struct Carriage
     {
-        
-        private readonly uint number;
-        private readonly CType type;
-        private readonly uint seats;
         private uint passengers;
         
-        public uint Seats { get { return seats; } }
-        public CType Type { get { return type; } }
-        public uint Number { get { return number; } }
-        public uint FreeSeats { get { return seats - passengers; } }
+        public uint Seats { get; init; }
+        public CType Type { get; init; }
+        public uint Number { get; init; }
+        public uint FreeSeats { get { return Seats - passengers; } }
 
         public uint Passenger
         {
-            get { return passengers; }
+            get => passengers;
             set
             {
-                if (value > seats) throw new Exception($" Invalid passengers count of carriage number \"{number}\"");
+                if (value > Seats) throw new Exception($" Invalid passengers count of carriage number \"{Number}\"");
                 else passengers = value;
             }
         }
 
         public Carriage(uint number, CType type, uint seats, uint passengers = 0)
         {
-            this.number = number;   
-            this.type = type;   
-            this.seats = seats; 
+            Number = number;   
+            Type = type;   
+            Seats = seats; 
             this.Passenger = passengers; 
         }
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder($"Сarriage \"{number}\"\n");
-            sb.AppendLine($" Type       : {type}");
-            sb.AppendLine($" Seats      : {seats}");
+            StringBuilder sb = new StringBuilder($"Сarriage \"{Number}\"\n");
+            sb.AppendLine($" Type       : {Type}");
+            sb.AppendLine($" Seats      : {Seats}");
             sb.AppendLine($" Passengers : {passengers}");
             sb.AppendLine($" Free seats : {FreeSeats}\n");
             return sb.ToString();

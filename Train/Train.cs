@@ -17,14 +17,12 @@ namespace Task1
     internal class Train
     {
         private Dictionary<uint,Carriage> carriages;
-        private readonly uint number;
-        private readonly TrainType type;
         private DateTime arrival;
 
         public DateTime Dispatch { get; set; }
         public string Route { get; set; }
-        public uint Number { get { return number; } }
-        public TrainType Type { get { return type; } }
+        public uint Number { get; init; }
+        public TrainType Type { get; init; }
         public TimeSpan TimeToArrival { get { return arrival - DateTime.Now; } }
         public int CarriageCount { get { return carriages.Count; } }
         public DateTime Arrival
@@ -32,7 +30,7 @@ namespace Task1
             get { return arrival; }
             set 
             {
-                if (arrival < Dispatch) throw new Exception($" Error in the arrival time of train number \"{number}\"");
+                if (arrival < Dispatch) throw new Exception($" Error in the arrival time of train number \"{Number}\"");
                 else arrival =  value; 
             }
         }
@@ -60,10 +58,10 @@ namespace Task1
         public Train(uint trainNumber,TrainType type,string route,DateTime dispatch,DateTime arrival,params Carriage[] carriages)
         {
             this.carriages = new  Dictionary<uint, Carriage>();
-            this.Route = route;
-            this.number = trainNumber;
-            this.type = type;
-            this.Dispatch = dispatch;
+            Route = route;
+            Number = trainNumber;
+            Type = type;
+            Dispatch = dispatch;
             this.arrival = arrival;
             for (int i = 0; i < carriages.Length; i++)
                 if (!this.carriages.TryAdd(carriages[i].Number, carriages[i])) 
@@ -72,14 +70,14 @@ namespace Task1
 
         public override string ToString() 
         {
-            StringBuilder sb = new StringBuilder($" -= Train \"{number}\" =-\n");
+            StringBuilder sb = new StringBuilder($" -= Train \"{Number}\" =-\n");
             sb.AppendLine($" Route        : {Route}");
             sb.AppendLine($" Dispatch     : {Dispatch}");
             sb.AppendLine($" Arrival      : {arrival}");
             sb.Append(" Arrival via  : "); 
             if (TimeToArrival.TotalHours < 0) sb.AppendLine("arrived");
             else sb.AppendLine($"{TimeToArrival.Hours}:{TimeToArrival.Minutes}");
-            sb.AppendLine($" Type         : {type}");
+            sb.AppendLine($" Type         : {Type}");
             sb.AppendLine($" Carriages    : {carriages.Count}");
             sb.AppendLine($" Free seats   : {FreeSeatsCount}");
             sb.AppendLine($" Average pass.: {AvrPass}\n");
@@ -89,7 +87,7 @@ namespace Task1
             return sb.ToString();
         }
 
-        public int AddCarriage(Carriage carriage)
+        public int AddCarriage( in Carriage carriage)
         {
             if (!carriages.TryAdd(carriage.Number, carriage)) throw new Exception($" Dublicate carriage number {carriage.Number}");
             return carriages.Count;
