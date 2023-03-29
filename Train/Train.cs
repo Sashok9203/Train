@@ -16,7 +16,7 @@ namespace Task1
 
     internal class Train
     {
-        private Сarriage[] carriages;
+        private Dictionary<uint,Carriage> carriages;
         private readonly uint number;
         private readonly TrainType type;
         private DateTime arrival;
@@ -26,7 +26,7 @@ namespace Task1
         public uint Number { get { return number; } }
         public TrainType Type { get { return type; } }
         public TimeSpan TimeToArrival { get { return arrival - DateTime.Now; } }
-        public int CarriageCount { get { return carriages.Length; } }
+        public int CarriageCount { get { return carriages.Count; } }
         public DateTime Arrival
         {
             get { return arrival; }
@@ -42,8 +42,8 @@ namespace Task1
             {
                 uint average = 0;
                 foreach (var car in carriages)
-                    average += car.Passenger;
-                return (float)Math.Round((float)average/carriages.Length,2);
+                    average += car.Value.Passenger;
+                return (float)Math.Round((float)average/carriages.Count,2);
             }
         }
         public uint FreeSeatsCount
@@ -52,21 +52,22 @@ namespace Task1
             {
                 uint count = 0;
                 foreach (var car in carriages)
-                    count += car.FreeSeats;
+                    count += car.Value.FreeSeats;
                 return count;
             } 
         }
 
-        public Train(uint trainNumber,TrainType type,string route,DateTime dispatch,DateTime arrival,params Сarriage[] carriages)
+        public Train(uint trainNumber,TrainType type,string route,DateTime dispatch,DateTime arrival,params Carriage[] carriages)
         {
+            this.carriages = new  Dictionary<uint, Carriage>();
             this.Route = route;
             this.number = trainNumber;
             this.type = type;
             this.Dispatch = dispatch;
             this.arrival = arrival;
-            for (int i = 0; i < carriages.Length - 1; i++)
-                if (carriages[i].Number == carriages[i + 1].Number) throw new Exception($" Dublicate carriage number {carriages[i].Number}");
-            this.carriages = carriages;
+            for (int i = 0; i < carriages.Length; i++)
+                if (!this.carriages.TryAdd(carriages[i].Number, carriages[i])) 
+                    throw new Exception($" Dublicate carriage number {carriages[i].Number}");
         }
 
         public override string ToString() 
@@ -79,14 +80,59 @@ namespace Task1
             if (TimeToArrival.TotalHours < 0) sb.AppendLine("arrived");
             else sb.AppendLine($"{TimeToArrival.Hours}:{TimeToArrival.Minutes}");
             sb.AppendLine($" Type         : {type}");
-            sb.AppendLine($" Carriages    : {carriages.Length}");
+            sb.AppendLine($" Carriages    : {carriages.Count}");
             sb.AppendLine($" Free seats   : {FreeSeatsCount}");
             sb.AppendLine($" Average pass.: {AvrPass}\n");
             sb.AppendLine($" ----- Carriages info -----\n");
             foreach (var car in carriages)
-                sb.Append(car.ToString());
+                sb.Append(car.Value.ToString());
             return sb.ToString();
         }
 
+        public int AddCarriage(Carriage carriage)
+        {
+            if (!carriages.TryAdd(carriage.Number, carriage)) throw new Exception($" Dublicate carriage number {carriage.Number}");
+            return carriages.Count;
+        }
+
+        public int AddCarriage(uint number, CType type, uint seats, uint passengers = 0)
+        {
+             return AddCarriage(new Carriage(number, type, seats, passengers));
+        }
+
+        public void PassBoarding(uint carriageNumber, ref uint passCount)
+        {
+            
+            if (!carriages.TryGetValue(carriageNumber, out Carriage tmp)) throw new Exception($" There is no carriage with number {carriageNumber}");
+            if (passCount == 0) return;
+            else if (passCount > tmp.FreeSeats)
+            {
+                passCount -= tmp.FreeSeats;
+                tmp.Passenger += tmp.FreeSeats;
+            }
+            else
+            {
+                tmp.Passenger += passCount;
+                passCount = 0;
+            }
+            carriages[carriageNumber] = tmp;
+        }
+
+        public void PassBoarding(ref uint passCount)
+        {
+            foreach (var car in carriages)
+            {
+                if (passCount == 0) break;
+                PassBoarding(car.Value.Number, ref passCount);
+            }
+        }
+
+            public void PassDisembarkation(uint carriageNumber,  uint passCount = 0)
+        {
+            if (!carriages.TryGetValue(carriageNumber,out Carriage tmp)) throw new Exception($" There is no carriage with number {carriageNumber}");
+            if (passCount == 0 || passCount > tmp.Passenger) tmp.Passenger = 0;
+            else tmp.Passenger -= passCount;
+            carriages[carriageNumber] = tmp;    
+        }
     }
 }

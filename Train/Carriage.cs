@@ -12,8 +12,9 @@ namespace Task1
         Freight,
         Сompartment
     }
-    struct Сarriage
+    struct Carriage
     {
+        
         private readonly uint number;
         private readonly CType type;
         private readonly uint seats;
@@ -34,7 +35,7 @@ namespace Task1
             }
         }
 
-        public Сarriage(uint number, CType type, uint seats, uint passengers = 0)
+        public Carriage(uint number, CType type, uint seats, uint passengers = 0)
         {
             this.number = number;   
             this.type = type;   
